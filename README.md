@@ -1,4 +1,4 @@
-# Clima
+# Clima [Projeto de Estudo]
 
 Aplicação web para buscar cidades e consultar as condições meteorológicas atuais, com informações como temperatura, sensação térmica, umidade e vento. Os dados são fornecidos pela API Open-Meteo.
 
