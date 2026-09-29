@@ -78,7 +78,7 @@ Pendências: nenhuma para T02; testes comportamentais entram junto às tarefas q
 
 ### T03 — Serviço de geocodificação
 
-- [ ] Implementar `searchCities` e validar as localizações retornadas.
+- [x] Implementar `searchCities` e validar as localizações retornadas.
 
 **Referência:** [PRD](./prd.md), seção 4.1 e seção 5 — Serviço Open-Meteo.
 
@@ -93,9 +93,14 @@ Pendências: nenhuma para T02; testes comportamentais entram junto às tarefas q
 - Falha HTTP, rede, JSON inválido e timeout retornam `null`; timers são limpos e não há retries automáticos.
 - A suíte cobre esses cenários e passa sem depender da API real.
 
+Conclusão: 2026-09-28
+Arquivos alterados: `src/services/open-meteo.ts`, `src/test/open-meteo.test.ts`.
+Verificação: `npm exec -- vitest run src/test/open-meteo.test.ts` passou (20 testes); `npm run build` passou. Fetch, respostas e timeout controlados; timeout aborta em 15 s, timers são limpos e não há retries.
+Pendências: nenhuma.
+
 ### T04 — Serviço de condições atuais
 
-- [ ] Implementar `getCurrentWeather` com validação completa do resultado.
+- [x] Implementar `getCurrentWeather` com validação completa do resultado.
 
 **Referência:** [PRD](./prd.md), seção 4.2 e seção 5 — Serviço Open-Meteo.
 
@@ -110,9 +115,14 @@ Pendências: nenhuma para T02; testes comportamentais entram junto às tarefas q
 - Um código meteorológico inteiro desconhecido não invalida um clima completo.
 - Falhas HTTP, rede, parsing e timeout retornam `null`, com os testes passando.
 
+Conclusão: 2026-09-28
+Arquivos alterados: `src/services/open-meteo.ts`, `src/test/open-meteo.test.ts`.
+Verificação: `npm test` passou (58 testes); `npm run build` passou. Requisição inspecionada com coordenadas/timezone da localização, variáveis atuais, Celsius e km/h; validações parametrizadas cobrem métricas, unidades, limites, falhas e timeout.
+Pendências: nenhuma.
+
 ### T05 — Descrições, ícones e formatação
 
-- [ ] Implementar os utilitários de apresentação do clima.
+- [x] Implementar os utilitários de apresentação do clima.
 
 **Referência:** [PRD](./prd.md), RF-03, RF-04, seção 4.3 e seção 5 — Estado e apresentação.
 
@@ -125,6 +135,11 @@ Pendências: nenhuma para T02; testes comportamentais entram junto às tarefas q
 - Testes de números verificam locale, arredondamento e preservação dos valores originais.
 - Com um instante fixo próximo à virada do dia, testes em dois timezones confirmam as datas locais esperadas, independentemente do fuso do dispositivo.
 - A suíte dos utilitários passa.
+
+Conclusão: 2026-09-28
+Arquivos alterados: `src/utils/weather-code.ts`, `src/utils/formatters.ts`, `src/test/weather-presentation.test.ts`.
+Verificação: teste focado passou (35 testes); `npm test` passou (93 testes); `npm run build` passou. Todos os códigos WMO do PRD, variação dia/noite, fallback desconhecido, locale, arredondamento e datas em `America/Los_Angeles` e `Asia/Tokyo` verificados com dados controlados.
+Pendências: nenhuma.
 
 ## Fase 3 — Componentes da interface
 
