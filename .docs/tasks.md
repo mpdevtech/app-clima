@@ -147,7 +147,7 @@ Pendências: nenhuma.
 
 ### T06 — Formulário e estados básicos
 
-- [ ] Construir o formulário, o painel inicial, o loading e o estado sem resultado.
+- [x] Construir o formulário, o painel inicial, o loading e o estado sem resultado.
 
 **Referência:** [PRD](./prd.md), RF-01, RF-05 e seção 6 — Composição obrigatória e Acessibilidade.
 
@@ -161,9 +161,14 @@ Pendências: nenhuma.
 - Renderizadores de loading e sem resultado podem ser verificados isoladamente, com região de status e `aria-busy` coerentes.
 - As mensagens correspondem ao PRD e não há métricas fictícias na interface.
 
+Conclusão: 2026-09-28
+Arquivos alterados: `package.json`, `package-lock.json`, `src/main.ts`, `src/style.css`, `src/components/basic-states.ts`, `src/components/search-form.ts`, `src/test/basic-states.test.ts`.
+Verificação: `npm exec -- vitest run src/test/basic-states.test.ts` passou (7 testes); `npm test` passou (100 testes); `npm run build` passou. Inspeção no navegador confirmou o título, formulário e estado inicial; Enter vazio manteve foco e estado, sem requisições externas nem erros no console.
+Pendências: nenhuma.
+
 ### T07 — Lista de localizações
 
-- [ ] Construir a seleção acessível de resultados da geocodificação.
+- [x] Construir a seleção acessível de resultados da geocodificação.
 
 **Referência:** [PRD](./prd.md), seção 2, RF-02, RF-05, seção 4.1 e seção 6.
 
@@ -177,9 +182,14 @@ Pendências: nenhuma.
 - Tab navega pelas opções; Enter, Espaço e clique selecionam o objeto correto, mesmo com nomes iguais.
 - A lista anuncia sua disponibilidade, não mostra loading enquanto aguarda escolha e comporta textos longos sem corte.
 
+Conclusão: 2026-09-28
+Arquivos alterados: `src/components/location-options.ts`, `src/style.css`, `src/test/location-options.test.ts`.
+Verificação: `npm exec -- vitest run src/test/location-options.test.ts` passou (5 testes); `npm test` passou (105 testes); `npm run build` passou. No navegador, 320 px sem overflow; Tab, Enter e Espaço verificados em opções homônimas, e a seleção preservou a localização exata.
+Pendências: nenhuma.
+
 ### T08 — Painel de resultado completo
 
-- [ ] Construir a sidebar e os quatro indicadores meteorológicos.
+- [x] Construir a sidebar e os quatro indicadores meteorológicos.
 
 **Referência:** [PRD](./prd.md), RF-03, RF-04, seção 5 — Estado e apresentação, e seção 6.
 
@@ -192,6 +202,11 @@ Pendências: nenhuma.
 - Nome de cidade contendo marcação HTML aparece como texto, sem interpretar ou executar conteúdo.
 - O painel inclui a atribuição e o link do provedor.
 - O renderizador não realiza requisições e recebe apenas resultados completos.
+
+Conclusão: 2026-09-28
+Arquivos alterados: `src/components/weather-result.ts`, `src/style.css`, `src/test/weather-result.test.ts`.
+Verificação: `npm exec -- vitest run src/test/weather-result.test.ts` passou (5 testes); `npm test` passou (110 testes); `npm run build` passou. Fixtures completas, zeros, negativos, noite, código desconhecido, timezone, texto com marcação HTML, atribuição e ausência de fetch verificados.
+Pendências: nenhuma.
 
 ## Fase 4 — Fluxo integrado
 
