@@ -240,7 +240,7 @@ Pendências: nenhuma.
 
 ### T10 — Acabamento visual e responsividade
 
-- [ ] Aplicar e conferir o layout final em todos os estados.
+- [x] Aplicar e conferir o layout final em todos os estados.
 
 **Referência:** [PRD](./prd.md), seção 6 — Composição obrigatória, Parâmetros visuais e Responsividade.
 
@@ -254,9 +254,14 @@ Pendências: nenhuma.
 - Textos longos e uma lista com 10 opções continuam legíveis e acessíveis; no mobile a composição se reorganiza conforme o PRD.
 - Registrar as dimensões verificadas e evidências visuais, como capturas ou referências de inspeção, no registro da tarefa.
 
+Conclusão: 2026-09-29
+Arquivos alterados: `src/style.css`, `.docs/tasks.md`.
+Verificação: `npm run build` passou. Inspeção no browser integrado dos estados inicial, carregando, seleção com 10 opções, sucesso e sem resultado; em 320/640/1280 px não houve rolagem horizontal. Painel mediu 296/585/800 px; em 320 px os indicadores ficam em uma coluna, em 640 px a sidebar empilha e os indicadores ficam em duas colunas, e em 1280 px a sidebar fica à esquerda dos indicadores. Opção e localização com textos longos quebraram linha sem overflow; a lista manteve altura máxima de 360 px e rolagem vertical. Fundo conferido em `#242424`, painel branco, cantos e espaçamentos preservados conforme PRD.
+Pendências: nenhuma.
+
 ### T11 — Verificação de acessibilidade
 
-- [ ] Revisar e corrigir a experiência completa com teclado e leitor de tela.
+- [x] Revisar e corrigir a experiência completa com teclado e leitor de tela.
 
 **Referência:** [PRD](./prd.md), seção 6 — Acessibilidade e comportamento da seleção; seção 7, critério 14.
 
@@ -270,13 +275,18 @@ Pendências: nenhuma.
 - Ícones decorativos não poluem a leitura; informação não depende só de cor e animações respeitam movimento reduzido.
 - Registrar ferramentas utilizadas, cenários verificados e resultados; verificações não executadas impedem marcar esta tarefa como concluída.
 
+Conclusão: 2026-09-29
+Arquivos alterados: `src/style.css`, `.docs/tasks.md`.
+Verificação: `npm test` passou (112 testes na verificação original; 115 na validação final); `npm run build` passou. Inspeção da árvore acessível no browser confirmou nomes do campo e botão, status/busy, lista nomeada, opções como botões e região de resultado. Contraste medido: texto secundário 6,1:1, texto principal 16,29:1 e foco sobre branco 6,55:1. Campo e botão medem 52 px de altura; o contorno `:focus-visible` é sólido, 3 px; ícones têm `aria-hidden="true"`; `prefers-reduced-motion` reduz a animação a 0,01 ms. O responsável confirmou que executou a jornada completa por teclado e a verificação com leitor de tela, ambas aprovadas; o produto/versão do leitor não foi informado nesta sessão. As evidências anteriores de T06/T07 cobrem foco vazio e seleção por teclado.
+Pendências: nenhuma reportada pelo responsável.
+
 ## Fase 6 — Validação e entrega
 
 **Ordem:** T12. **Pré-requisito:** fase 5 concluída. **Resultado esperado:** aplicação validada contra todos os critérios do PRD, com evidências finais registradas.
 
 ### T12 — Validação final e entrega
 
-- [ ] Conferir a implementação contra todos os critérios de aceitação do PRD.
+- [x] Conferir a implementação contra todos os critérios de aceitação do PRD.
 
 **Referência:** [PRD](./prd.md), seções 7 e 8.
 
@@ -289,6 +299,31 @@ Pendências: nenhuma.
 - Os cenários controlados da seção 8 estão cobertos, incluindo timeout e retomada após erro; não há mocks ativos em produção.
 - Cada um dos 16 critérios da seção 7 tem uma evidência registrada por número, referenciando teste ou inspeção realizada, sem copiar o texto do PRD.
 - Não existem falhas conhecidas que violem o PRD, e todas as tarefas anteriores estão aprovadas.
+- Não existem falhas conhecidas que violem o PRD, e todas as tarefas anteriores estão aprovadas.
+
+Conclusão: 2026-09-29
+Arquivos alterados: `src/test/integration.test.ts`, `.docs/tasks.md`.
+Verificação: `npm test` passou (115 testes em 6 arquivos); `npm run build` passou. `npm run preview -- --host 127.0.0.1` abriu em `http://127.0.0.1:4173/`; título, formulário e estado inicial conferidos, sem erros de console. Busca real por Nuuk recebeu HTTP 200 na geocodificação e na previsão; exibiu localização, data, descrição e as quatro métricas completas. Busca real por Reykjavik retornou duas opções e a seleção exibiu resultado completo; sem erros de console. Busca estática confirmou que `src/services/open-meteo.ts` é o único arquivo de produção com `fetch`.
+
+Evidências dos critérios de aceitação do PRD:
+
+1. `src/test/basic-states.test.ts`: inicial sem consulta; confirmação visual no preview.
+2. `src/test/basic-states.test.ts`: submit comum a botão e Enter; consulta real enviada por Enter no browser.
+3. `src/test/basic-states.test.ts` e `src/test/open-meteo.test.ts`: entrada em branco não consulta; nome com acento/espaço e parâmetros da geocodificação validados.
+4. `src/test/open-meteo.test.ts`: parâmetros e coordenadas/timezone; ambos os endpoints reais responderam HTTP 200.
+5. `src/test/integration.test.ts` e preview: fluxo automático com uma opção e escolha explícita entre resultados reais múltiplos; clima consultado após a escolha.
+6. `src/test/integration.test.ts`: cidade sem resultados conclui sem chamar previsão.
+7. `src/test/open-meteo.test.ts`, `src/test/basic-states.test.ts` e `src/test/integration.test.ts`: dados/métricas inválidos e falhas terminam sem painel parcial, com retry bem-sucedido.
+8. `src/test/open-meteo.test.ts` e `src/test/weather-result.test.ts`: zeros, temperatura negativa e noite preservados.
+9. `src/test/weather-result.test.ts` e busca real: resumo e quatro métricas com unidades renderizados.
+10. `src/test/weather-presentation.test.ts` e `src/test/weather-result.test.ts`: data por timezone e estado dia/noite.
+11. `src/test/weather-presentation.test.ts` e `src/test/weather-result.test.ts`: códigos WMO e fallback desconhecido.
+12. `src/test/open-meteo.test.ts` cobre timeout nos dois serviços; `src/test/integration.test.ts` cobre controles bloqueados, erro e retomada.
+13. Registro T10: larguras 320/640/1280 px sem overflow e painel de até 800 px.
+14. Registro T11: árvore acessível inspecionada; o responsável confirmou jornada completa por teclado e teste com leitor de tela aprovados.
+15. `src/test/open-meteo.test.ts`, `src/test/location-options.test.ts` e `src/test/integration.test.ts`: entradas inválidas misturadas, homônimas, seleção exata e substituição da lista por nova busca.
+16. Busca no workspace encontrou `fetch` de produção somente em `src/services/open-meteo.ts`; `npm run build` passou.
+    Pendências: nenhuma conhecida.
 
 ## Registro de conclusão
 

@@ -125,4 +125,170 @@ describe('weather search flow', () => {
       expect(document.querySelector('.weather-result')).not.toBeNull()
     })
   })
+
+  it('clears failed results, allows retry, and skips weather when no city is found', async () => {
+    const fetchMock = vi.mocked(globalThis.fetch as typeof fetch)
+    const cityResult = {
+      name: 'São Paulo',
+      latitude: -23.55,
+      longitude: -46.63,
+      country_code: 'BR',
+      timezone: 'America/Sao_Paulo',
+    }
+    fetchMock
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ results: [cityResult] }),
+      } as Response)
+      .mockResolvedValueOnce({ ok: true, json: async () => weatherPayload } as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ results: [cityResult] }),
+      } as Response)
+      .mockResolvedValueOnce({ ok: false, json: async () => ({}) } as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ results: [cityResult] }),
+      } as Response)
+      .mockResolvedValueOnce({ ok: true, json: async () => weatherPayload } as Response)
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ results: [] }) } as Response)
+
+    await import('../main')
+
+    const form = document.querySelector<HTMLFormElement>('.search-form')!
+    const input = document.querySelector<HTMLInputElement>('.search-form__input')!
+    input.value = 'São Paulo'
+    form.requestSubmit()
+
+    await vi.waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledTimes(2)
+      expect(document.querySelector('.weather-result')).not.toBeNull()
+    })
+
+    form.requestSubmit()
+
+    await vi.waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledTimes(4)
+      expect(document.body.textContent).toContain('Nenhum resultado encontrado')
+    })
+    expect(input.value).toBe('São Paulo')
+    expect(input.disabled).toBe(false)
+    expect(document.querySelector('[data-metric]')).toBeNull()
+
+    form.requestSubmit()
+
+    await vi.waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledTimes(6)
+      expect(document.querySelector('.weather-result')).not.toBeNull()
+    })
+
+    input.value = 'Cidade inexistente'
+    form.requestSubmit()
+
+    await vi.waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledTimes(7)
+      expect(document.body.textContent).toContain('Nenhum resultado encontrado')
+    })
+    expect(document.querySelector('.weather-result')).toBeNull()
+  })
+
+  it('replaces unselected locations when the user starts a new search', async () => {
+    const fetchMock = vi.mocked(globalThis.fetch as typeof fetch)
+    const oldLocations = [
+      {
+        name: 'Springfield',
+        latitude: 1,
+        longitude: 2,
+        country_code: 'BR',
+        timezone: 'America/Sao_Paulo',
+        admin1: 'São Paulo',
+      },
+      {
+        name: 'Springfield',
+        latitude: 3,
+        longitude: 4,
+        country_code: 'BR',
+        timezone: 'America/Sao_Paulo',
+        admin1: 'São Paulo',
+      },
+    ]
+    const newLocation = {
+      name: 'Porto Alegre',
+      latitude: -30.03,
+      longitude: -51.23,
+      country_code: 'BR',
+      timezone: 'America/Sao_Paulo',
+    }
+    fetchMock
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ results: oldLocations }) } as Response)
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ results: [newLocation] }) } as Response)
+      .mockResolvedValueOnce({ ok: true, json: async () => weatherPayload } as Response)
+
+    await import('../main')
+
+    const form = document.querySelector<HTMLFormElement>('.search-form')!
+    const input = document.querySelector<HTMLInputElement>('.search-form__input')!
+    input.value = 'Springfield'
+    form.requestSubmit()
+
+    await vi.waitFor(() => {
+      expect(document.querySelectorAll('.location-options__button')).toHaveLength(2)
+    })
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+
+    input.value = 'Porto Alegre'
+    form.requestSubmit()
+
+    await vi.waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledTimes(3)
+      expect(document.querySelector('.weather-result')).not.toBeNull()
+    })
+    expect(document.querySelectorAll('.location-options__button')).toHaveLength(0)
+    expect(document.querySelector('.weather-summary__city')?.textContent).toContain('Porto Alegre')
+    expect(new URL(fetchMock.mock.calls[2][0] as string).searchParams.get('latitude')).toBe(
+      String(newLocation.latitude),
+    )
+  })
+
+  it('does not submit again while the weather request is pending', async () => {
+    const fetchMock = vi.mocked(globalThis.fetch as typeof fetch)
+    const cityResult = {
+      name: 'São Paulo',
+      latitude: -23.55,
+      longitude: -46.63,
+      country_code: 'BR',
+      timezone: 'America/Sao_Paulo',
+    }
+    let resolveWeather!: (response: Response) => void
+    fetchMock
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ results: [cityResult] }),
+      } as Response)
+      .mockImplementationOnce(
+        () =>
+          new Promise<Response>((resolve) => {
+            resolveWeather = resolve
+          }),
+      )
+
+    await import('../main')
+
+    const form = document.querySelector<HTMLFormElement>('.search-form')!
+    const input = document.querySelector<HTMLInputElement>('.search-form__input')!
+    const button = document.querySelector<HTMLButtonElement>('.search-form__button')!
+    input.value = 'São Paulo'
+    form.requestSubmit()
+
+    await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2))
+    expect(input.disabled).toBe(true)
+    expect(button.disabled).toBe(true)
+    button.click()
+    expect(fetchMock).toHaveBeenCalledTimes(2)
+
+    resolveWeather({ ok: true, json: async () => weatherPayload } as Response)
+    await vi.waitFor(() => expect(document.querySelector('.weather-result')).not.toBeNull())
+    expect(input.disabled).toBe(false)
+    expect(button.disabled).toBe(false)
+  })
 })

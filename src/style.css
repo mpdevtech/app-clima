@@ -1,11 +1,11 @@
 :root {
-  --page-background: #172b45;
-  --text-primary: #1b2c40;
-  --text-secondary: #53657b;
-  --border: #dce5ef;
+  --page-background: #252730;
+  --text-primary: #202020;
+  --text-secondary: #626262;
+  --border: #e5e7eb;
   --accent: #245f9e;
   --accent-hover: #1d4d80;
-  --focus: #65adf5;
+  --focus: #245f9e;
   --surface-muted: #f4f7fb;
   --surface-hover: #eef5fc;
   --weather-icon: #245f9e;
