@@ -214,7 +214,7 @@ Pendências: nenhuma.
 
 ### T09 — Integração do fluxo de busca
 
-- [ ] Conectar formulário, serviços e renderizadores por meio dos estados da aplicação.
+- [x] Conectar formulário, serviços e renderizadores por meio dos estados da aplicação.
 
 **Referência:** [PRD](./prd.md), RF-01 a RF-05 e seção 5 — Serviço Open-Meteo e Estado e apresentação.
 
@@ -228,6 +228,11 @@ Pendências: nenhuma.
 - Nova busca na etapa de seleção substitui a lista anterior; iniciar busca após sucesso remove os dados anteriores.
 - Falha em qualquer etapa ou resposta incompleta leva ao mesmo estado vazio, preserva a pesquisa e libera os controles; uma nova tentativa pode ter sucesso.
 - Não há métricas parciais, loading permanente ou erros não tratados. Requisições e URLs permanecem exclusivamente no serviço Open-Meteo.
+
+Conclusão: 2026-09-28
+Arquivos alterados: `src/main.ts`, `src/test/integration.test.ts`.
+Verificação: `npm exec -- vitest run src/test/integration.test.ts` passou (2 testes); `npm test` passou (112 testes); `npm run build` passou. O fluxo valida busca com zero/uma/múltiplas localizações, seleção e recuperação de falha sem duplicar chamadas nem deixar loading preso.
+Pendências: nenhuma.
 
 ## Fase 5 — Experiência visual e acessibilidade
 
